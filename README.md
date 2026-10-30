@@ -49,6 +49,3 @@ This repository is a cleaned collection of reusable analysis functions and does 
 
 `pytest -q` checks feature-score ordering for a mock MIC implementation, the public SVM workflow, numerical bootstrap bounds, and that evaluation does not optimize a threshold on test labels. Tests use synthetic data only.
 
-## License
-
-No license is supplied. Add a license only if all code owners agree to the intended reuse conditions.
