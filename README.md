@@ -18,7 +18,7 @@ pip install -r requirements.txt
 
 ## Input format
 
-Prepare separate training and test CSV files. Each row represents an observation, each feature column contains a numeric value, and `Label` contains a binary outcome coded `0` or `1`. Feature columns must be identical and in the same order in both files; data must contain no missing values. The script does not include any datasets.
+Prepare separate training and test CSV files. Each row represents an observation, each feature column contains a numeric value, and `Label` contains a binary outcome coded `0` or `1`. 
 
 ## Run
 
