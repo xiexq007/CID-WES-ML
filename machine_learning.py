@@ -1,7 +1,7 @@
 """Model comparison, feature ranking and SVM evaluation for binary tabular data.
 
 The input is a pandas DataFrame containing numerical features and a binary
-outcome column. No study-specific data or paths are included.
+outcome column.
 """
 
 import argparse
@@ -23,8 +23,7 @@ from sklearn.feature_selection import chi2
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     accuracy_score, average_precision_score, balanced_accuracy_score,
-    confusion_matrix, roc_auc_score, roc_curve,
-)
+    confusion_matrix, roc_auc_score, roc_curve)
 from sklearn.model_selection import StratifiedKFold, RandomizedSearchCV
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
