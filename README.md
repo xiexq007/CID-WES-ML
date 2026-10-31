@@ -4,7 +4,7 @@ Python implementation of the model comparison, feature ranking, incremental feat
 
 ## Methods
 
-The model comparison includes **KNN, Naive Bayes, logistic regression (LR), SVM, XGBoost, random forest (RF), stacking, multilayer perceptron (MLP), and a one-dimensional CNN**. Performance is evaluated by stratified cross-validation with ROC AUC and average precision (AUPRC) calculated from continuous prediction scores.
+The model comparison includes **KNN, Naive Bayes (NB), logistic regression (LR), support vector machine (SVM), eXtreme Gradient Boosting (XGBoost), random forest (RF), stacking, multilayer perceptron (MLP), and a one-dimensional CNN**. Performance is evaluated by stratified cross-validation with ROC AUC and average precision (AUPRC) calculated from continuous prediction scores.
 
 Feature rankings include **MIC, ReliefF, random forest importance, and chi-square**. An incremental-feature-selection curve can be computed using each ranking. An RBF-SVM is then fitted using a selected feature count and cross-validated hyperparameter tuning.
 
