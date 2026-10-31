@@ -35,5 +35,3 @@ Outputs include model comparison results, ranked features, incremental feature-s
 Random seeds are set in the model constructors and cross-validation splitters. The MIC ranking preserves the original pandas descending sorting behavior for equal MIC scores. With tied scores, the selected feature identities can depend on the input column order and software versions.
 
 Feature ranking followed by cross-validation on the same development cohort can produce optimistic cross-validation estimates. For an unbiased estimate of a full feature-selection workflow, feature ranking and tuning must be repeated inside each training fold of an outer validation loop. The final test data must not be used to choose the model or feature count.
-
-No individual-level data, trained models, or sample identifiers are distributed in this repository.
