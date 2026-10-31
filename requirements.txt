@@ -1,0 +1,9 @@
+numpy>=1.23
+pandas>=2.0
+scipy>=1.10
+scikit-learn>=1.5
+matplotlib>=3.8
+minepy==1.2.6
+skrebate>=0.62
+xgboost>=2.0
+torch>=2.0

@@ -1,51 +1,39 @@
-# Variant-based machine learning analysis
+# Machine learning analysis of genetic variants
 
-Python functions for the feature-ranking and SVM classification analyses described in a study of rare variants and chronic insomnia disorder. **No participant-level data, genotype matrices, credentials, paths or fitted models are distributed.**
+Python implementation of the model comparison, feature ranking, incremental feature selection, SVM optimization, and model evaluation procedures used in a binary variant-classification analysis.
 
-## Scope
+## Methods
 
-`src/insomnia_ml/core.py` includes MIC, random forest, ReliefF and chi-squared rankings; model comparison; fixed-ranking incremental feature selection (IFS); SVM parameter tuning; and evaluation. The original notebook also explored XGBoost, MLP, CNN and ensemble classifiers. Those exploratory implementations have **not** been included here, so this reduced repository does **not** reproduce the full original nine-model comparison.
+The model comparison includes **KNN, Naive Bayes, logistic regression (LR), SVM, XGBoost, random forest (RF), stacking, multilayer perceptron (MLP), and a one-dimensional CNN**. Performance is evaluated by stratified cross-validation with ROC AUC and average precision (AUPRC) calculated from continuous prediction scores.
 
-The historical MIC ordering was generated using `MINE(alpha=0.6, c=15)` followed by `pandas.DataFrame.sort_values('MIC_score', ascending=False)` without a secondary sorting key. **This tie behavior is important:** many sparse variants have identical MIC scores. The option `legacy_ties=True` preserves that algorithm, but exact rank reproduction can depend on package versions and input feature order. For new work, `legacy_ties=False` provides a documented alphabetical tie-break rule; it should not be described as identical to the original selection.
+Feature rankings include **MIC, ReliefF, random forest importance, and chi-square**. An incremental-feature-selection curve can be computed using each ranking. An RBF-SVM is then fitted using a selected feature count and cross-validated hyperparameter tuning.
 
-## Set up
+## Installation
 
-Use Python 3.10. The versions documented for the historical analysis were pandas 2.2.2, NumPy 1.23.5, scikit-learn 1.5.0 and minepy 1.2.6. These are **historical environment records**, not a tested, fully pinned installation lockfile. Install the needed packages in a compatible environment; minepy may require a working compiler toolchain.
+Use Python 3.10+ and install the packages in `requirements.txt`. The `minepy` package may require a compatible build environment. PyTorch runs on CPU by default; GPU setup is optional.
 
 ```bash
-python -m pip install -e '.[test]'
-python -m pip install minepy==1.2.6 skrebate
-pytest -q
+pip install -r requirements.txt
 ```
 
 ## Input format
 
-Supply a pandas DataFrame `X` indexed by sample and with one numeric column per variant. Supply labels `y` encoded as `0` (control) and `1` (CID). The columns must be kept in the same order to reproduce historical tied MIC ranks. Divide training and testing data **before** computing data-dependent feature scores. This repository does not include the sample IDs or exact original train/test assignment.
+Prepare separate training and test CSV files. Each row represents an observation, each feature column contains a numeric value, and `Label` contains a binary outcome coded `0` or `1`. Feature columns must be identical and in the same order in both files; data must contain no missing values. The script does not include any datasets.
 
-```python
-from insomnia_ml import mic_ranking, make_svm, evaluate
+## Run
 
-# X_train, X_test: sample-by-variant DataFrames
-# y_train, y_test: integer arrays of 0/1 labels
-ranking = mic_ranking(X_train, y_train, legacy_ties=True)
-selected = ranking['Feature'].head(145).tolist()
-model = make_svm(C=1.0, gamma='scale', probability=True, random_state=42)
-model.fit(X_train[selected], y_train)
-metrics = evaluate(model, X_test[selected], y_test)
-print(metrics)
+```bash
+python machine_learning.py --train path/to/train.csv --test path/to/test.csv --output results --features 145
 ```
 
-The `evaluate` function calculates ROC AUC using continuous decision scores and classification metrics from `predict()`. Historical scripts used predicted probabilities for ROC and chose classification thresholds using evaluation labels; those threshold-derived classification metrics should **not** be treated as untouched test-set performance. This public implementation avoids choosing thresholds on evaluation labels.
+The `--features` value is configurable. `--skip-comparison` skips the more computationally intensive nine-model comparison. The main functions can also be imported independently from `machine_learning.py`.
 
-## How to interpret validation
+Outputs include model comparison results, ranked features, incremental feature-selection results, selected features, fitted-model performance, and a test ROC plot.
 
-The `incremental_feature_selection` utility evaluates a **fixed ranking** over cross-validation folds. If that ranking was generated from all labels in the same training cohort, the fold-wise AUC can be optimistic because validation labels helped to rank the features. An unbiased assessment of the selection *procedure* requires ranking and model/parameter selection anew within training folds (preferably with outer CV). A fixed-panel CV is not equivalent to such an assessment.
+## Reproducibility notes
 
-## Reproducibility limits
+Random seeds are set in the model constructors and cross-validation splitters. The MIC ranking preserves the original pandas descending sorting behavior for equal MIC scores. With tied scores, the selected feature identities can depend on the input column order and software versions.
 
-This repository is a cleaned collection of reusable analysis functions and does **not** permit independent numerical replication of the published AUC or the 145 SNP set without the exact input matrix, sample split, full preprocessing and original fitted-model configuration. Sharing scripts alone is insufficient for full reproducibility. Variant calling, upstream gene prioritization, detailed missing-genotype handling, and any external validation are outside this repository.
+Feature ranking followed by cross-validation on the same development cohort can produce optimistic cross-validation estimates. For an unbiased estimate of a full feature-selection workflow, feature ranking and tuning must be repeated inside each training fold of an outer validation loop. The final test data must not be used to choose the model or feature count.
 
-## Tests
-
-`pytest -q` checks feature-score ordering for a mock MIC implementation, the public SVM workflow, numerical bootstrap bounds, and that evaluation does not optimize a threshold on test labels. Tests use synthetic data only.
-
+No individual-level data, trained models, or sample identifiers are distributed in this repository.
